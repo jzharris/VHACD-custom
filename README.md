@@ -1,11 +1,7 @@
 # VHACD
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE.md)
-![Unity](https://img.shields.io/badge/unity-2020.2+-brightgreen)
-
----
-
-We're currently working on lots of things! Please take a short moment fill out our [survey](https://unitysoftware.co1.qualtrics.com/jfe/form/SV_0ojVkDVW0nNrHkW) to help us identify what products and packages to build next.
+![Unity](https://img.shields.io/badge/unity-2020.23+-brightgreen)
 
 ---
 
@@ -23,7 +19,7 @@ We're currently working on lots of things! Please take a short moment fill out o
 3. Enter the git URL for the desired package. Note: you can append a version tag to the end of the git url, like `#v0.4.0` or `#v0.5.0`, to declare a specific package version, or exclude the tag to get the latest from the package's `main` branch.
 
     ```
-    https://github.com/Unity-Technologies/VHACD.git?path=/com.unity.robotics.vhacd
+    https://github.com/rorygames/VHACD.git?path=/com.rorygames.vhacd
     ```
 
 4. Click `Add`.
@@ -62,12 +58,8 @@ A second approach consists in computing an exact convex decomposition of a surfa
 ---
 
 ## Support
-For questions or discussions about Unity Robotics package installations or how to best set up and integrate your robotics projects, please create a new thread on the [Unity Robotics forum](https://forum.unity.com/forums/robotics.623/) and make sure to include as much detail as possible.
 
-For feature requests, bugs, or other issues, please file a [GitHub issue](https://github.com/Unity-Technologies/v-hacd-unity/issues) using the provided templates and the Robotics team will investigate as soon as possible.
-
-## More from Unity Robotics
-Visit the [Robotics Hub](https://github.com/Unity-Technologies/Unity-Robotics-Hub) for more tutorials, tools, and information on robotics simulation in Unity!
+For feature requests, bugs, or other issues, please file a [GitHub issue](https://github.com/rorygames/VHACD/issues).
 
 ## License
 [Apache 2.0](LICENSE)
