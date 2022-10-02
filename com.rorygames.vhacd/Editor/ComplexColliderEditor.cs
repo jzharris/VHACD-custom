@@ -27,6 +27,7 @@ namespace VHACD.Unity
         private SerializedProperty _paramConvexHullApprox;
         private SerializedProperty _paramOCLAccel;
         private SerializedProperty _paramMaxConvexHull;
+        private SerializedProperty _paramProjectHullVertices;
 
         private SerializedProperty _colliderData;
         private SerializedProperty _colliders;
@@ -85,6 +86,7 @@ namespace VHACD.Unity
             _paramConvexHullApprox = _parameters.FindPropertyRelative("m_convexhullApproximation");
             _paramOCLAccel = _parameters.FindPropertyRelative("m_oclAcceleration");
             _paramMaxConvexHull = _parameters.FindPropertyRelative("m_maxConvexHulls");
+            _paramProjectHullVertices = _parameters.FindPropertyRelative("m_projectHullVertices");
 
             _isTrigger = serializedObject.FindProperty("_isTrigger");
             _physicMaterial = serializedObject.FindProperty("_material");
@@ -140,6 +142,7 @@ namespace VHACD.Unity
                 EditorGUILayout.PropertyField(_paramMinVolume);
                 EditorGUILayout.PropertyField(_paramConvexHullApprox);
                 EditorGUILayout.PropertyField(_paramOCLAccel);
+                EditorGUILayout.PropertyField(_paramProjectHullVertices);
             }
         }
 
@@ -214,6 +217,7 @@ namespace VHACD.Unity
             _paramMinVolume.doubleValue = 0.0001;
             _paramConvexHullApprox.intValue = 1;
             _paramOCLAccel.intValue = 0;
+            _paramProjectHullVertices.boolValue = true;
         }
 
         #endregion

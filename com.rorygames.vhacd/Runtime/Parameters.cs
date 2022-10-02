@@ -77,10 +77,13 @@ namespace VHACD.Unity
         [Range(0, 1)]
         public uint m_oclAcceleration;
 
+        [Tooltip("The maximum number of sub-meshes that can be created for this object." +
+            " More complex meshes with higher numbers will result in both more computation time and larger file sizes.")]
         [Range(1, 1024)]
         public uint m_maxConvexHulls;
 
-        [Tooltip("This will project the output convex hull vertices onto the original source mesh to increase the floating point accuracy of the results")]
+        [Tooltip("This will project the output convex hull vertices onto the original source mesh to increase the floating point accuracy of the results." +
+            " This can improve how closely the colliders match your object, but also cause small instances of gaps between colliders.")]
         public bool m_projectHullVertices;
     };
 }
