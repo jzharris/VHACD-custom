@@ -1,17 +1,13 @@
-# VHACD
+# V-HACD - Complex Colliders
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE.md)
-![Unity](https://img.shields.io/badge/unity-2020.2+-brightgreen)
+![Unity](https://img.shields.io/badge/unity-2020.23+-brightgreen)
 
 ---
 
-We're currently working on lots of things! Please take a short moment fill out our [survey](https://unitysoftware.co1.qualtrics.com/jfe/form/SV_0ojVkDVW0nNrHkW) to help us identify what products and packages to build next.
+The V-HACD library decomposes a 3D surface into a set of "near" convex parts. Within Unity this means we can calculate accurate convex mesh colliders, with correctly wrapped concave regions.
 
----
-
-## The V-HACD library decomposes a 3D surface into a set of "near" convex parts.
-
-![Approximate convex decomposition of "Camel"](https://github.com/kmammou/v-hacd/raw/master/doc/acd.png)
+![Differences between mesh colliders and complex colliders](https://user-images.githubusercontent.com/6281246/193474631-014fc9d9-6512-4912-bbe9-e2b5fa442562.png)
 
 ## Installation
 
@@ -23,12 +19,32 @@ We're currently working on lots of things! Please take a short moment fill out o
 3. Enter the git URL for the desired package. Note: you can append a version tag to the end of the git url, like `#v0.4.0` or `#v0.5.0`, to declare a specific package version, or exclude the tag to get the latest from the package's `main` branch.
 
     ```
-    https://github.com/Unity-Technologies/VHACD.git?path=/com.unity.robotics.vhacd
+    https://github.com/rorygames/VHACD.git?path=/com.rorygames.vhacd
     ```
 
 4. Click `Add`.
 
 To install from a local clone of the repository, see [installing a local package](https://docs.unity3d.com/Manual/upm-ui-local.html) in the Unity manual.
+
+## Usage
+
+Complex colliders can be used to calculate the colliders for an individual mesh, or can combine every single mesh within the child objects of the hierarchy.
+
+![Editor view of the complex collider](https://user-images.githubusercontent.com/6281246/193474827-5b266a2e-7ef0-498c-81b0-71f6587989b4.png)
+
+1. Add a `Complex Collider` component to your object.
+2. Choose your `Collider Quality`.
+    1. Custom quality allows you to fully control all the options, but is significantly more confusing.
+3. Press either of the calculate buttons, depending on your current setup.
+    1. The interface will disable the options that are unavailable.
+4. Your collider will then be calculated and stored into a scriptable object within your project.
+    1. This allows you to quickly re-use the asset on other instances of your mesh across your scene.
+
+## Limitations
+- No runtime compilation
+  - I have not tested it, nor do I plan to support it.
+- Certain parameter setups can cause significantly long processing times
+  - This is nowhere near as fast a simple mesh collider, it is designed to be more accurate.
 
 ---
 
@@ -62,12 +78,8 @@ A second approach consists in computing an exact convex decomposition of a surfa
 ---
 
 ## Support
-For questions or discussions about Unity Robotics package installations or how to best set up and integrate your robotics projects, please create a new thread on the [Unity Robotics forum](https://forum.unity.com/forums/robotics.623/) and make sure to include as much detail as possible.
 
-For feature requests, bugs, or other issues, please file a [GitHub issue](https://github.com/Unity-Technologies/v-hacd-unity/issues) using the provided templates and the Robotics team will investigate as soon as possible.
-
-## More from Unity Robotics
-Visit the [Robotics Hub](https://github.com/Unity-Technologies/Unity-Robotics-Hub) for more tutorials, tools, and information on robotics simulation in Unity!
+For feature requests, bugs, or other issues, please file a [GitHub issue](https://github.com/rorygames/VHACD/issues).
 
 ## License
 [Apache 2.0](LICENSE)
