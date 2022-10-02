@@ -1,13 +1,13 @@
-# VHACD
+# V-HACD - Complex Colliders
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE.md)
 ![Unity](https://img.shields.io/badge/unity-2020.23+-brightgreen)
 
 ---
 
-## The V-HACD library decomposes a 3D surface into a set of "near" convex parts.
+The V-HACD library decomposes a 3D surface into a set of "near" convex parts. Within Unity this means we can calculate accurate convex mesh colliders, with correctly wrapped concave regions.
 
-![Approximate convex decomposition of "Camel"](https://github.com/kmammou/v-hacd/raw/master/doc/acd.png)
+![Differences between mesh colliders and complex colliders](https://user-images.githubusercontent.com/6281246/193474631-014fc9d9-6512-4912-bbe9-e2b5fa442562.png)
 
 ## Installation
 
@@ -25,6 +25,26 @@
 4. Click `Add`.
 
 To install from a local clone of the repository, see [installing a local package](https://docs.unity3d.com/Manual/upm-ui-local.html) in the Unity manual.
+
+## Usage
+
+Complex colliders can be used to calculate the colliders for an individual mesh, or can combine every single mesh within the child objects of the hierarchy.
+
+![Editor view of the complex collider](https://user-images.githubusercontent.com/6281246/193474827-5b266a2e-7ef0-498c-81b0-71f6587989b4.png)
+
+1. Add a `Complex Collider` component to your object.
+2. Choose your `Collider Quality`.
+    1. Custom quality allows you to fully control all the options, but is significantly more confusing.
+3. Press either of the calculate buttons, depending on your current setup.
+    1. The interface will disable the options that are unavailable.
+4. Your collider will then be calculated and stored into a scriptable object within your project.
+    1. This allows you to quickly re-use the asset on other instances of your mesh across your scene.
+
+## Limitations
+- No runtime compilation
+  - I have not tested it, nor do I plan to support it.
+- Certain parameter setups can cause significantly long processing times
+  - This is nowhere near as fast a simple mesh collider, it is designed to be more accurate.
 
 ---
 
