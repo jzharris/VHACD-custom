@@ -1,8 +1,12 @@
 {
-    "name": "VHACD",
-    "rootNamespace": "VHACD.Unity",
-    "references": [],
-    "includePlatforms": [],
+    "name": "VHACDEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b0dc65aa46d174cbab72d2bfef413320"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": true,
     "overrideReferences": false,
