@@ -373,7 +373,6 @@ namespace VHACD.Unity
                     {
                         for (int i = _colliders.arraySize - 1; i >= data.computedMeshes.Length; i--)
                         {
-                            Debug.Log("3");
                             DestroyImmediate(_colliders.GetArrayElementAtIndex(i).objectReferenceValue);
                             _colliders.DeleteArrayElementAtIndex(i);
                         }
@@ -401,7 +400,6 @@ namespace VHACD.Unity
             {
                 for (int i = 0; i < _colliders.arraySize; i++)
                 {
-                    Debug.Log("1");
                     DestroyImmediate(_colliders.GetArrayElementAtIndex(i).objectReferenceValue);
                     _colliders.DeleteArrayElementAtIndex(i);
                     i--;
