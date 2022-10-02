@@ -36,7 +36,7 @@ namespace VHACD.Unity
         private bool _isTrigger = false;
         public bool IsTrigger
         {
-            set { _isTrigger = value; UpdateColliders(); }
+            set { _isTrigger = value; UpdateColliders(enabled); }
             get { return _isTrigger; }
         }
 
@@ -45,14 +45,8 @@ namespace VHACD.Unity
 
         public PhysicMaterial Material
         {
-            set { _material = value; UpdateColliders(); }
+            set { _material = value; UpdateColliders(enabled); }
             get { return _material; }
-        }
-
-        private void Awake()
-        {
-            ValidateColliders();
-            UpdateColliders();
         }
 
         private void Start()
@@ -60,24 +54,41 @@ namespace VHACD.Unity
             // Only to allow enable/disable
         }
 
-        private void UpdateColliders()
+        private void OnEnable()
+        {
+            UpdateColliders(true);
+        }
+
+        private void OnDisable()
+        {
+            UpdateColliders(false);
+        }
+
+        private void UpdateColliders(bool enabled)
         {
             for (int i = 0; i < _colliders.Count; i++)
             {
+                if (_colliders[i] == null)
+                    continue;
+
                 _colliders[i].isTrigger = _isTrigger;
                 _colliders[i].material = _material;
+                _colliders[i].convex = true;
+                _colliders[i].enabled = enabled;
+                if(_colliderData != null)
+                {
+                    _colliders[i].sharedMesh = _colliderData.computedMeshes[i];
+                }
             }
         }
 
         private void OnDestroy()
         {
+            return;
             if(_colliders.Count > 0)
             {
                 foreach (var item in _colliders)
                 {
-                    if (item == null)
-                        continue;
-
                     if (Application.isPlaying)
                     {
                         Destroy(item);
@@ -93,52 +104,6 @@ namespace VHACD.Unity
                     }
                 }
                 _colliders.Clear();
-            }
-        }
-
-        private void OnEnable()
-        {
-            foreach (var collider in _colliders)
-            {
-                collider.enabled = true;
-            }
-        }
-
-        private void OnDisable()
-        {
-            foreach (var collider in _colliders)
-            {
-                collider.enabled = false;
-            }
-        }
-
-        private void ValidateColliders()
-        {
-            if(_colliderData != null)
-            {
-                if(_colliders.Count != _colliderData.computedMeshes.Length)
-                {
-                    if(_colliders.Count > _colliderData.computedMeshes.Length)
-                    {
-                        for (int i = _colliders.Count; i > _colliderData.computedMeshes.Length; i--)
-                        {
-                            DestroyImmediate(_colliders[i]);
-                            _colliders.RemoveAt(i);
-                        }
-                    }
-                    else
-                    {
-                        for (int i = _colliders.Count; i < _colliderData.computedMeshes.Length; i++)
-                        {
-                            _colliders.Add(gameObject.AddComponent<MeshCollider>());
-                        }
-                    }
-                }
-                for (int i = 0; i < _colliders.Count; i++)
-                {
-                    _colliders[i].convex = true;
-                    _colliders[i].sharedMesh = _colliderData.computedMeshes[i];
-                }
             }
         }
 

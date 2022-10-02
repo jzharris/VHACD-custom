@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -20,14 +18,14 @@ namespace VHACD.Unity
 
 #if UNITY_EDITOR
 
-        public static ComplexColliderData CreateAsset(string path, string meshPrefix, int quality, Parameters parameters, Mesh[] meshes, Mesh[] baseMeshes)
+        public static ComplexColliderData CreateAsset(string path, int quality, Parameters parameters, Mesh[] meshes, Mesh[] baseMeshes)
         {
             ComplexColliderData obj = CreateInstance<ComplexColliderData>();
             AssetDatabase.CreateAsset(obj, path);
             int c = 0;
             foreach (var mesh in meshes)
             {
-                mesh.name = meshPrefix + c++;
+                mesh.name = $"Computed Mesh {c++}";
                 AssetDatabase.AddObjectToAsset(mesh, obj);
             }
             obj.quality = quality;
@@ -37,7 +35,7 @@ namespace VHACD.Unity
             return obj;
         }
 
-        public void UpdateAsset(string meshPrefix, int quality, Parameters parameters, Mesh[] meshes, Mesh[] baseMeshes)
+        public void UpdateAsset(int quality, Parameters parameters, Mesh[] meshes, Mesh[] baseMeshes)
         {
             foreach (var mesh in computedMeshes)
             {
@@ -47,7 +45,7 @@ namespace VHACD.Unity
             int c = 0;
             foreach (var mesh in meshes)
             {
-                mesh.name = meshPrefix + c++;
+                mesh.name = $"Computed Mesh {c++}";
                 AssetDatabase.AddObjectToAsset(mesh, this);
             }
             this.quality = quality;

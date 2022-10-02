@@ -215,6 +215,7 @@ namespace VHACD.Unity
 
         private void CalculateColliderButtons()
         {
+            EditorGUI.BeginDisabledGroup(Application.isPlaying);
             EditorGUI.BeginDisabledGroup(!_base.TryGetComponent<MeshFilter>(out var filter));
             if (GUILayout.Button($"Calculate Colliders From Current Mesh Filter"))
             {
@@ -249,6 +250,7 @@ namespace VHACD.Unity
                     CalculateColliders(_base.Parameters, null, true);
                 }
             }
+            EditorGUI.EndDisabledGroup();
             EditorGUI.EndDisabledGroup();
         }
 
@@ -317,6 +319,8 @@ namespace VHACD.Unity
                 }
             }
 
+            
+
             EditorUtility.ClearProgressBar();
             EditorUtility.DisplayProgressBar("Calculating Colliders", "Processing mesh... (this can take a while)", 0.5f);
 
@@ -335,13 +339,22 @@ namespace VHACD.Unity
 
             if (data == null)
             {
+                // Deal with non existent asset folder
+                if (string.IsNullOrEmpty(path) || path.StartsWith("Assets/") == false)
+                {
+                    path = $"Assets/ComplexColliders/{_base.name}.asset";
+                    if (AssetDatabase.IsValidFolder("Assets/ComplexColliders") == false)
+                    {
+                        AssetDatabase.CreateFolder("Assets", "ComplexColliders");
+                    }
+                }
                 path = Path.ChangeExtension(path, null) + $"_Colliders_{_qualityNames[_quality.intValue]}.asset";
                 path = AssetDatabase.GenerateUniqueAssetPath(path);
-                data = ComplexColliderData.CreateAsset(path, _base.name, _quality.intValue, parameters, meshes.ToArray(), originalMeshes.ToArray());
+                data = ComplexColliderData.CreateAsset(path, _quality.intValue, parameters, meshes.ToArray(), originalMeshes.ToArray());
             }
             else
             {
-                data.UpdateAsset(_base.name, _quality.intValue, parameters, meshes.ToArray(), originalMeshes.ToArray());
+                data.UpdateAsset(_quality.intValue, parameters, meshes.ToArray(), originalMeshes.ToArray());
             }
 
             AssetDatabase.SaveAssets();
@@ -415,8 +428,10 @@ namespace VHACD.Unity
         {
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Data Settings", EditorStyles.boldLabel);
+            EditorGUI.BeginDisabledGroup(Application.isPlaying);
             var oldData = _colliderData.objectReferenceValue;
             EditorGUILayout.PropertyField(_colliderData);
+            EditorGUI.EndDisabledGroup();
             if (oldData != _colliderData.objectReferenceValue)
             {
                 ValidateColliders();
