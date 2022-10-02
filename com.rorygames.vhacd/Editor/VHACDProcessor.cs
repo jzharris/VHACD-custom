@@ -103,6 +103,7 @@ namespace VHACD.Unity
 
                 meshes.Add(hullMesh);
             }
+            DestroyVHACD(vhacd);
             return true;
         }
 

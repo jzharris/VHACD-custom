@@ -42,14 +42,21 @@ namespace VHACD.Unity
 
             ScriptField();
 
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             ValidateColliders();
 
             QualityButtons();
 
             CalculateColliderButtons();
+            EditorGUILayout.EndVertical();
 
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             DataSettings();
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             ColliderSettings();
+            EditorGUILayout.EndVertical();
 
             serializedObject.ApplyModifiedProperties();
         }
@@ -426,7 +433,6 @@ namespace VHACD.Unity
 
         private void DataSettings()
         {
-            EditorGUILayout.Space();
             EditorGUILayout.LabelField("Data Settings", EditorStyles.boldLabel);
             EditorGUI.BeginDisabledGroup(Application.isPlaying);
             var oldData = _colliderData.objectReferenceValue;
@@ -451,7 +457,6 @@ namespace VHACD.Unity
 
         private void ColliderSettings()
         {
-            EditorGUILayout.Space();
             EditorGUILayout.LabelField("Collider Settings", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(_isTrigger);
             EditorGUILayout.PropertyField(_physicMaterial);
