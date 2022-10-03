@@ -365,7 +365,7 @@ namespace VHACD.Unity
                 {
                     EditorUtility.ClearProgressBar();
                     EditorUtility.DisplayProgressBar("Calculating Colliders", $"Processing mesh... ({c++}/{meshesToCalc.Count}) (this can take a while)",
-                        Mathf.Lerp(0.4f, 0.7f, Mathf.InverseLerp(1, meshesToCalc.Count, c)));
+                        Mathf.Lerp(0.4f, 0.7f, Mathf.InverseLerp(1, meshesToCalc.Count+1, c)));
                     VHACDProcessor.GenerateConvexMeshes(item, parameters, out tempMeshes);
                     meshes.AddRange(tempMeshes);
                 }
