@@ -97,7 +97,7 @@ namespace VHACD.Unity
 #if UNITY_EDITOR
                         EditorApplication.delayCall += () =>
                         {
-                            if (item) DestroyImmediate(item);
+                            if (item && !Application.isPlaying) DestroyImmediate(item);
                         };
 #endif
                     }
