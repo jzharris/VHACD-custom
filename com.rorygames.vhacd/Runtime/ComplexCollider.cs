@@ -17,6 +17,12 @@ namespace VHACD.Unity
 
         [SerializeField, HideInInspector]
         private int _quality = -1;
+
+        [SerializeField, HideInInspector, Tooltip("Disabling this will create more accurate colliders, at the expense of significantly more colliders when using sub-meshes." +
+            " This will cause many more physics calculations during gameplay." +
+            " Keep this enabled unless you need the upmost accuracy.")]
+        private bool _combineMeshesBeforeCompute = true;
+
 #pragma warning restore CS0414
 #endif
 
