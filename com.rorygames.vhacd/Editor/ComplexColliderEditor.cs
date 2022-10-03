@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using UnityEngine.Rendering;
+using System;
 
 namespace VHACD.Unity
 {
@@ -34,6 +36,7 @@ namespace VHACD.Unity
         private SerializedProperty _isTrigger;
         private SerializedProperty _physicMaterial;
         private SerializedProperty _hideColliders;
+        private SerializedProperty _combineBeforeCompute;
 
         private string[] _qualityNames = { "Low", "Medium", "High", "Insane", "Custom" };
 
@@ -91,6 +94,8 @@ namespace VHACD.Unity
             _isTrigger = serializedObject.FindProperty("_isTrigger");
             _physicMaterial = serializedObject.FindProperty("_material");
             _hideColliders = serializedObject.FindProperty("_hideColliders");
+
+            _combineBeforeCompute = serializedObject.FindProperty("_combineMeshesBeforeCompute");
         }
 
         private void ScriptField()
@@ -262,6 +267,9 @@ namespace VHACD.Unity
                 }
             }
             EditorGUI.EndDisabledGroup();
+
+            EditorGUILayout.PropertyField(_combineBeforeCompute);
+
             EditorGUI.EndDisabledGroup();
         }
 
@@ -271,6 +279,10 @@ namespace VHACD.Unity
             string path = "";
             EditorUtility.DisplayProgressBar("Calculating Colliders", "Discovering meshes...", 0.1f);
             List<Mesh> originalMeshes = new List<Mesh>();
+
+            List<Mesh> meshesToCalc = new List<Mesh>();
+            List<Matrix4x4> transformsToCalc = new List<Matrix4x4>();
+
             if (combine)
             {
                 MeshFilter[] filters = _base.GetComponentsInChildren<MeshFilter>(true);
@@ -290,19 +302,19 @@ namespace VHACD.Unity
                 }
                 else
                 {
-                    CombineInstance[] combineMesh = new CombineInstance[foundMeshes.Count];
                     for (int i = 0; i < foundMeshes.Count; i++)
                     {
                         if(path == "")
                         {
                             path = AssetDatabase.GetAssetPath(foundMeshes[i].sharedMesh);
                         }
-                        combineMesh[i].mesh = foundMeshes[i].sharedMesh;
+                        for (int j = 0; j < foundMeshes[i].sharedMesh.subMeshCount; j++)
+                        {
+                            meshesToCalc.Add(ExtractSubmesh(foundMeshes[i].sharedMesh, j));
+                            transformsToCalc.Add(_base.transform.worldToLocalMatrix * foundMeshes[i].transform.localToWorldMatrix);
+                        }
                         originalMeshes.Add(foundMeshes[i].sharedMesh);
-                        combineMesh[i].transform = _base.transform.worldToLocalMatrix * foundMeshes[i].transform.localToWorldMatrix;
                     }
-                    mesh = new Mesh();
-                    mesh.CombineMeshes(combineMesh);
                 }
             }
             else
@@ -317,7 +329,11 @@ namespace VHACD.Unity
                     }
                     else
                     {
-                        mesh = filter.sharedMesh;
+                        for (int j = 0; j < filter.sharedMesh.subMeshCount; j++)
+                        {
+                            meshesToCalc.Add(ExtractSubmesh(filter.sharedMesh, j));
+                            transformsToCalc.Add(_base.transform.worldToLocalMatrix * filter.transform.localToWorldMatrix);
+                        }
                         originalMeshes.Add(filter.sharedMesh);
                         path = AssetDatabase.GetAssetPath(mesh);
                     }
@@ -330,14 +346,31 @@ namespace VHACD.Unity
                 }
             }
 
-            
-
             EditorUtility.ClearProgressBar();
-            EditorUtility.DisplayProgressBar("Calculating Colliders", "Processing mesh... (this can take a while)", 0.5f);
+            EditorUtility.DisplayProgressBar("Calculating Colliders", "Combining meshes...", 0.3f);
 
             List<Mesh> meshes = new List<Mesh>();
+            if (_combineBeforeCompute.boolValue)
+            {
+                mesh = CombineMeshes(meshesToCalc, transformsToCalc);
+                EditorUtility.ClearProgressBar();
+                EditorUtility.DisplayProgressBar("Calculating Colliders", $"Processing mesh... (this can take a while)", 0.5f);
+                VHACDProcessor.GenerateConvexMeshes(mesh, parameters, out meshes);
+            }
+            else
+            {
+                List<Mesh> tempMeshes = new List<Mesh>();
+                int c = 1;
+                foreach (var item in meshesToCalc)
+                {
+                    EditorUtility.ClearProgressBar();
+                    EditorUtility.DisplayProgressBar("Calculating Colliders", $"Processing mesh... ({c++}/{meshesToCalc.Count}) (this can take a while)",
+                        Mathf.Lerp(0.4f, 0.7f, Mathf.InverseLerp(1, meshesToCalc.Count, c)));
+                    VHACDProcessor.GenerateConvexMeshes(item, parameters, out tempMeshes);
+                    meshes.AddRange(tempMeshes);
+                }
+            }
 
-            VHACDProcessor.GenerateConvexMeshes(mesh, parameters, out meshes);
             EditorUtility.ClearProgressBar();
 
             if(meshes.Count == 0)
@@ -378,6 +411,61 @@ namespace VHACD.Unity
 
             EditorGUIUtility.PingObject(data);
         }
+
+        private Mesh CombineMeshes(List<Mesh> meshes, List<Matrix4x4> transform)
+        {
+            if(meshes.Count == 1)
+            {
+                return meshes[0];
+            }
+            CombineInstance[] combineMesh = new CombineInstance[meshes.Count];
+            for (int i = 0; i < meshes.Count; i++)
+            {
+                combineMesh[i].mesh = meshes[i];
+                combineMesh[i].transform = transform[i];
+            }
+            Mesh mesh = new Mesh();
+            mesh.CombineMeshes(combineMesh);
+            return mesh;
+        }
+
+        private Mesh ExtractSubmesh(Mesh mesh, int submesh)
+        {
+            Mesh newMesh = new Mesh();
+            SubMeshDescriptor descriptor = mesh.GetSubMesh(submesh);
+            newMesh.vertices = RangeSubset(mesh.vertices, descriptor.firstVertex, descriptor.vertexCount);
+
+            var triangles = RangeSubset(mesh.triangles, descriptor.indexStart, descriptor.indexCount);
+            for (int i = 0; i < triangles.Length; i++)
+            {
+                triangles[i] -= descriptor.firstVertex;
+            }
+
+            newMesh.triangles = triangles;
+
+            if (mesh.normals != null && mesh.normals.Length == mesh.vertices.Length)
+            {
+                newMesh.normals = RangeSubset(mesh.normals, descriptor.firstVertex, descriptor.vertexCount);
+            }
+            else
+            {
+                newMesh.RecalculateNormals();
+            }
+
+            newMesh.Optimize();
+            newMesh.OptimizeIndexBuffers();
+            newMesh.RecalculateBounds();
+            newMesh.name = mesh.name + $" Submesh {submesh}";
+            return newMesh;
+        }
+
+        private T[] RangeSubset<T>(T[] array, int startIndex, int length)
+        {
+            T[] subset = new T[length];
+            Array.Copy(array, startIndex, subset, 0, length);
+            return subset;
+        }
+
         private void ValidateColliders()
         {
             if (_colliderData.objectReferenceValue != null)
