@@ -31,7 +31,7 @@ namespace VHACD.Unity
         public Parameters Parameters => _parameters;
 
         [SerializeField]
-        private ComplexColliderData _colliderData;
+        public ComplexColliderData _colliderData;
 
         [SerializeField]
         private List<MeshCollider> _colliders = new List<MeshCollider>();
