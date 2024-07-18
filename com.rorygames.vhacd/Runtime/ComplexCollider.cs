@@ -112,6 +112,14 @@ namespace VHACD.Unity
             }
         }
 
+        public void Cleanup()
+        {
+            foreach (var coll in _colliders)
+            {
+                DestroyImmediate(coll);
+            }
+        }
+
 #if UNITY_EDITOR
         private void Reset()
         {

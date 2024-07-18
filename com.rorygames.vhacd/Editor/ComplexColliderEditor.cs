@@ -63,6 +63,21 @@ namespace VHACD.Unity
             EditorGUILayout.EndVertical();
 
             serializedObject.ApplyModifiedProperties();
+
+            if (GUILayout.Button("Delete Prefab"))
+            {
+                // Get the Prefab Asset root GameObject and its asset path.
+                GameObject assetRoot = Selection.activeObject as GameObject;
+                string assetPath = AssetDatabase.GetAssetPath(assetRoot);
+
+                using (var editingScope = new PrefabUtility.EditPrefabContentsScope(assetPath))
+                {
+                    var prefabRoot = editingScope.prefabContentsRoot;
+                    ComplexCollider _cc = prefabRoot.GetComponent<ComplexCollider>();
+                    _cc.Cleanup();
+                    DestroyImmediate(_cc);
+                }
+            }
         }
 
         private void Properties()
