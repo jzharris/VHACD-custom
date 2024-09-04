@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -70,6 +71,11 @@ namespace VHACD.Unity
             UpdateColliders(false);
         }
 
+        public void ManuallySetColliders(List<MeshCollider> mcs)
+        {
+            _colliders = mcs.ToList();
+        }
+
         private void UpdateColliders(bool enabled)
         {
             for (int i = 0; i < _colliders.Count; i++)
@@ -123,11 +129,11 @@ namespace VHACD.Unity
 #if UNITY_EDITOR
         private void Reset()
         {
-            Collider[] cols = GetComponentsInChildren<Collider>(true);
-            foreach (var item in cols)
+            foreach (var item in _colliders)
             {
                 DestroyImmediate(item);
             }
+            _colliders.Clear();
         }
 #endif
     }
